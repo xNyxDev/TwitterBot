@@ -20,19 +20,20 @@ client = tweepy.Client(BEARER_TOKEN, API_KEY, API_SECRET, API_TOKEN, API_TOKEN_S
 
 def obtener_datos_interesantes():
     """
-    Obtiene un dato aleatorio. Maneja posibles errores durante la solicitud
-    y el proceso de traducción. Incluye un valor de retorno por defecto.
+    Obtiene un dato aleatorio en inglés y lo traduce al español.
+    Maneja posibles errores durante la solicitud y el proceso de traducción.
+    Incluye un valor de retorno por defecto.
 
     Devuelve:
-        str: Un dato aleatorio traducido, o None si ocurre un error.
+        str: Un dato aleatorio traducido al español, o None si ocurre un error.
     """
     try:
-        res = request.get("https://uselessfacts.jsph.pl/random.json?language=es") #cambio el language a en
+        res = request.get("https://uselessfacts.jsph.pl/random.json") # Solicitamos en inglés
         res.raise_for_status()  # Lanza una excepción para códigos de estado incorrectos (4xx o 5xx)
 
         data = res.json()  # Parsea los datos JSON
         if "text" in data:
-            traducido = GoogleTranslator(source='en', target='es').translate(data["text"]) #agrego la traduccion
+            traducido = GoogleTranslator(source='en', target='es').translate(data["text"]) # Traducimos al español
             return traducido # Devuelve el texto traducido
         else:
             print("Error: la clave \'text\' no se encontró en la respuesta de la API.")
@@ -59,7 +60,7 @@ def main(): # Se agregó una función main
         else:
             print("No se pudo obtener un dato interesante. No se enviará el tweet.")
 
-        time.sleep(120)  # Espera 1 hora antes de enviar el siguiente tweet
+        time.sleep(3600)  # Espera 1 hora antes de enviar el siguiente tweet
 
 if __name__ == "__main__":
     main()
