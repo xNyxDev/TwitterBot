@@ -1,5 +1,6 @@
 import tweepy
 import time
+import os
 import requests as request
 from deep_translator import GoogleTranslator
 
