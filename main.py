@@ -18,7 +18,7 @@ client = tweepy.Client(BEARER_TOKEN, API_KEY, API_SECRET, API_TOKEN, API_TOKEN_S
 
 def obtener_datos_interesantes():
     try:
-        res = request.get("https://uselessfacts.jsph.pl/random.json?language=es")
+        res = request.get("https://uselessfacts.jsph.pl/api/v2/facts/random?language=en")
         if res.status_code == 200:
             data = res.json()
             dato_en = data.get("text")
