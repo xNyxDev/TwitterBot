@@ -19,48 +19,25 @@ if not all([API_KEY, API_SECRET, BEARER_TOKEN, API_TOKEN, API_TOKEN_SECRET]):
 client = tweepy.Client(BEARER_TOKEN, API_KEY, API_SECRET, API_TOKEN, API_TOKEN_SECRET)
 
 def obtener_datos_interesantes():
-    """
-    Obtiene un dato aleatorio en inglés y lo traduce al español.
-    Maneja posibles errores durante la solicitud y el proceso de traducción.
-    Incluye un valor de retorno por defecto.
-
-    Devuelve:
-        str: Un dato aleatorio traducido al español, o None si ocurre un error.
-    """
     try:
-        res = request.get("https://uselessfacts.jsph.pl/random.json") # Solicitamos en inglés
-        res.raise_for_status()  # Lanza una excepción para códigos de estado incorrectos (4xx o 5xx)
-
-        data = res.json()  # Parsea los datos JSON
-        if "text" in data:
-            traducido = GoogleTranslator(source='en', target='es').translate(data["text"]) # Traducimos al español
-            return traducido # Devuelve el texto traducido
+        res = request.get("https://uselessfacts.jsph.pl/random.json?language=es")
+        if res.status_code == 200:
+            traducido = GoogleTranslator(source='auto', target='es').translate(res.json().get("text"))
+            return traducido
         else:
-            print("Error: la clave \'text\' no se encontró en la respuesta de la API.")
-            return None # Devuelve explícitamente None en caso de que falte la clave 'text'
-    except request.exceptions.RequestException as e:
-        print(f"Error al obtener los datos: {e}")
-        return None
+            print("Error al obtener datos interesantes")
     except Exception as e:
-        print(f"Error al traducir los datos: {e}")
-        return None
+        print(f"Error: {e}")
 
-def main(): # Se agregó una función main
-    """
-    Función principal para obtener y tuitear un dato aleatorio cada hora.
-    """
-    while True:
-        dato = obtener_datos_interesantes()
-        if dato: # Verifica que dato no sea None
-            try:
-                client.create_tweet(text="Dato del Dia: " + dato)
-                print("Tweet enviado con éxito")
-            except tweepy.TweepyException as e:
-                print(f"Error al enviar el tweet: {e}")
-        else:
-            print("No se pudo obtener un dato interesante. No se enviará el tweet.")
+while True:
+    dato = obtener_datos_interesantes()
+    try:
+        client.create_tweet(text="Dato del Dia: " + dato)
+        print("Tweet enviado con éxito")
+    except Exception as e:
+        print(f"Error al enviar el tweet: {e}")
 
-        time.sleep(3600)  # Espera 1 hora antes de enviar el siguiente tweet
+    time.sleep(3600)  # Espera 1 hora antes de enviar el siguiente tweet
 
 if __name__ == "__main__":
     main()
