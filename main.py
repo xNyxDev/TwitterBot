@@ -4,7 +4,6 @@ import threading
 import schedule
 import requests
 import tweepy
-
 from flask import Flask
 from deep_translator import GoogleTranslator
 
@@ -34,12 +33,19 @@ def obtener_dato_interesante():
     try:
         print("🔍 Obteniendo dato interesante...")
         res = requests.get("https://uselessfacts.jsph.pl/random.json?language=es")
+        print(f"⚠️ Respuesta de la API: {res.text}")  # Mostrar el cuerpo de la respuesta
+
         if res.status_code == 200:
             dato_json = res.json()
-            texto_original = dato_json.get("text", "")
-            traducido = GoogleTranslator(source='auto', target='es').translate(texto_original)
-            print(f"✅ Dato obtenido y traducido: {traducido}")
-            return traducido
+            print(f"✅ Dato JSON recibido: {dato_json}")  # Mostrar el JSON completo
+            texto_original = dato_json.get("text", None)
+            if texto_original:
+                traducido = GoogleTranslator(source='auto', target='es').translate(texto_original)
+                print(f"✅ Dato obtenido y traducido: {traducido}")
+                return traducido
+            else:
+                print("⚠️ No se encontró el campo 'text' en la respuesta.")
+                return None
         else:
             print(f"⚠️ Error en la API de datos. Código: {res.status_code}")
             return None
