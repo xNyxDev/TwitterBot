@@ -5,18 +5,17 @@ import schedule
 import requests
 import tweepy
 import json
-
 from flask import Flask
 from deep_translator import GoogleTranslator
 
-# Cargar variables de entorno
+# ========== CARGA DE VARIABLES DE ENTORNO ==========
 API_KEY = os.environ.get("API_KEY")
 API_SECRET = os.environ.get("API_SECRET")
 BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
 API_TOKEN = os.environ.get("API_TOKEN")
 API_TOKEN_SECRET = os.environ.get("API_TOKEN_SECRET")
 
-# Inicializar cliente de Twitter
+# ========== INICIALIZAR CLIENTE DE TWITTER ==========
 client = None
 try:
     client = tweepy.Client(
@@ -30,35 +29,44 @@ try:
 except Exception as e:
     print(f"❌ Error al inicializar el cliente de Twitter: {e}")
 
-# Obtener un dato interesante desde la API
+# ========== OBTENER DATO INTERESANTE ==========
 def obtener_dato_interesante():
     try:
         print("🔍 Obteniendo dato interesante...")
         res = requests.get("https://uselessfacts.jsph.pl/random.json?language=en")
-        texto = res.text.strip().rstrip(";")  # 🧼 Limpiar el carácter ';'
-        print(f"📥 Respuesta de la API (limpia): {texto}")
+        raw = res.text.strip().rstrip(";")
+        print(f"📥 Respuesta bruta: {raw}")
 
         if res.status_code == 200:
-            dato_json = json.loads(texto)
+            dato_json = json.loads(raw)
             texto_original = dato_json.get("text")
             if texto_original:
                 traducido = GoogleTranslator(source='en', target='es').translate(texto_original)
-                print(f"✅ Dato traducido: {traducido}")
+                print(f"✅ Traducción: {traducido}")
                 return traducido
             else:
-                print("⚠️ El campo 'text' no se encontró en la respuesta.")
+                print("⚠️ El campo 'text' no está en la respuesta.")
                 return None
         else:
-            print(f"⚠️ Error en la API. Código: {res.status_code}")
+            print(f"⚠️ Código de error HTTP: {res.status_code}")
             return None
     except Exception as e:
-        print(f"❌ Error al obtener el dato: {e}")
+        print(f"❌ Error al procesar el dato: {e}")
         return None
 
-# Publicar un tweet
+# ========== GUARDAR HISTORIAL ==========
+def guardar_en_historial(texto):
+    try:
+        with open("tweets.log", "a", encoding="utf-8") as log:
+            log.write(texto + "\n")
+        print("📝 Dato guardado en el historial.")
+    except Exception as e:
+        print(f"⚠️ No se pudo guardar en el historial: {e}")
+
+# ========== PUBLICAR TWEET ==========
 def publicar_tweet():
     if not client:
-        print("⚠️ Cliente de Twitter no disponible. Tweet no publicado.")
+        print("⚠️ Cliente de Twitter no disponible.")
         return
 
     dato = obtener_dato_interesante()
@@ -67,28 +75,29 @@ def publicar_tweet():
             response = client.create_tweet(text=f"Dato del Día: {dato}")
             tweet_id = response.data['id']
             print(f"✅ Tweet publicado con ID: {tweet_id}")
+            guardar_en_historial(f"Tweet ID: {tweet_id} - {dato}")
         except Exception as e:
             print(f"❌ Error al publicar el tweet: {e}")
     else:
         print("⚠️ No se obtuvo ningún dato para publicar.")
 
-# Iniciar programador de tareas
+# ========== INICIAR PROGRAMADOR ==========
 def iniciar_scheduler():
-    print("🕒 Iniciando programador de tweets cada 2 minutos...")
-    publicar_tweet()  # Publicar un primer tweet al inicio
+    print("🕒 Programador de tareas iniciado. Publicando cada 2 minutos.")
+    publicar_tweet()
     schedule.every(2).minutes.do(publicar_tweet)
     while True:
         schedule.run_pending()
         time.sleep(1)
 
-# Flask App
+# ========== FLASK ==========
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "✅ Bot activo y funcionando."
+    return "✅ Bot activo y funcionando. Revisa los logs para ver los tweets enviados."
 
-# Ejecutar servidor Flask y programador
+# ========== MAIN ==========
 if __name__ == "__main__":
     puerto = int(os.environ.get("PORT", 10000))
 
@@ -96,5 +105,5 @@ if __name__ == "__main__":
     scheduler_thread.daemon = True
     scheduler_thread.start()
 
-    print(f"🚀 Servidor Flask iniciado en el puerto {puerto}")
+    print(f"🚀 Servidor Flask iniciado en http://localhost:{puerto}")
     app.run(host="0.0.0.0", port=puerto)
