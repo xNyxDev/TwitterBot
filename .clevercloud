@@ -1,0 +1,5 @@
+{
+  "deploy": {
+    "pythonVersion": "3.10"
+  }
+}
