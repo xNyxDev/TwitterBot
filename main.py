@@ -26,17 +26,17 @@ def obtener_dato_curioso():
         str: El dato curioso traducido al español, o None si ocurre un error.
     """
     try:
-        # API de Chukcha (Ruso)
+        # API de Useless Facts (Inglés)
         response = requests.get("https://uselessfacts.jsph.pl/api/v2/facts/random?language=en")
-        response.raise_for_status()  # Lanza una excepción para códigos de error HTTP
+        response.raise_for_status()
         data = response.json()
-        joke_text_ru = data.get("text")
+        joke_text = data.get("text")
 
-        if joke_text_ru:
-            # Traducir de Ruso a Español
-            translator = GoogleTranslator(source='ru', target='es')
-            joke_text_es = translator.translate(joke_text_ru)
-            return joke_text_es
+        if joke_text:
+            # Traducir el texto a español
+            translator = GoogleTranslator(target='es')
+            texto_traducido = translator.translate(joke_text)
+            return texto_traducido
         else:
             print("Error: La respuesta JSON no contiene el campo 'text'.")
             return None
@@ -49,6 +49,12 @@ def obtener_dato_curioso():
         return None
 
 def publicar_tweet(dato):
+    """
+    Publica un tweet con el dato curioso proporcionado.
+
+    Args:
+        dato (str): El dato curioso que se va a publicar.
+    """
     try:
         client.create_tweet(text="Dato del Día: " + dato)
         print("Tweet enviado con éxito")
