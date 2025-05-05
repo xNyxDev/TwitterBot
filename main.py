@@ -20,20 +20,20 @@ client = tweepy.Client(BEARER_TOKEN, API_KEY, API_SECRET, API_TOKEN, API_TOKEN_S
 
 def obtener_datos_interesantes():
     """
-    Obtiene un dato aleatorio en español. Maneja posibles errores durante la solicitud
+    Obtiene un dato aleatorio. Maneja posibles errores durante la solicitud
     y el proceso de traducción. Incluye un valor de retorno por defecto.
 
     Devuelve:
         str: Un dato aleatorio traducido, o None si ocurre un error.
     """
     try:
-        res = request.get("https://uselessfacts.jsph.pl/random.json?language=es")
+        res = request.get("https://uselessfacts.jsph.pl/random.json?language=en") #cambio el language a en
         res.raise_for_status()  # Lanza una excepción para códigos de estado incorrectos (4xx o 5xx)
 
         data = res.json()  # Parsea los datos JSON
         if "text" in data:
-            #traducido = GoogleTranslator(source='auto', target='es').translate(data["text"])
-            return data["text"] # Devuelve el texto directamente, sin traducir
+            traducido = GoogleTranslator(source='en', target='es').translate(data["text"]) #agrego la traduccion
+            return traducido # Devuelve el texto traducido
         else:
             print("Error: la clave \'text\' no se encontró en la respuesta de la API.")
             return None # Devuelve explícitamente None en caso de que falte la clave 'text'
