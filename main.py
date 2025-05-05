@@ -38,20 +38,27 @@ def obtener_dato_interesante():
         print(f"📥 Respuesta bruta: {raw}")
 
         if res.status_code == 200:
-            dato_json = json.loads(raw)
-            texto_original = dato_json.get("text")
-            if texto_original:
-                traducido = GoogleTranslator(source='en', target='es').translate(texto_original)
-                print(f"✅ Traducción: {traducido}")
-                return traducido
-            else:
-                print("⚠️ El campo 'text' no está en la respuesta.")
+            try:
+                dato_json = json.loads(raw)
+                texto_original = dato_json.get("text")
+                if texto_original:
+                    traducido = GoogleTranslator(source='en', target='es').translate(texto_original)
+                    print(f"✅ Traducción: {traducido}")
+                    return traducido
+                else:
+                    print("⚠️ El campo 'text' no está en la respuesta.")
+                    return None
+            except json.JSONDecodeError as e:
+                print(f"⚠️ Error al decodificar JSON: {e} - Respuesta bruta: {raw}")
                 return None
         else:
             print(f"⚠️ Código de error HTTP: {res.status_code}")
             return None
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Error de conexión al obtener el dato: {e}")
+        return None
     except Exception as e:
-        print(f"❌ Error al procesar el dato: {e}")
+        print(f"❌ Error inesperado al procesar el dato: {e}")
         return None
 
 # ========== GUARDAR HISTORIAL ==========
@@ -76,7 +83,7 @@ def publicar_tweet():
             tweet_id = response.data['id']
             print(f"✅ Tweet publicado con ID: {tweet_id}")
             guardar_en_historial(f"Tweet ID: {tweet_id} - {dato}")
-        except Exception as e:
+        except tweepy.TweepyException as e:
             print(f"❌ Error al publicar el tweet: {e}")
     else:
         print("⚠️ No se obtuvo ningún dato para publicar.")
