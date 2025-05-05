@@ -59,7 +59,7 @@ def main(): # Se agregó una función main
         else:
             print("No se pudo obtener un dato interesante. No se enviará el tweet.")
 
-        time.sleep(3600)  # Espera 1 hora antes de enviar el siguiente tweet
+        time.sleep(120)  # Espera 1 hora antes de enviar el siguiente tweet
 
 if __name__ == "__main__":
     main()
