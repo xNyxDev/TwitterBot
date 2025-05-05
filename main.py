@@ -3,11 +3,11 @@ import time
 import requests as request
 from deep_translator import GoogleTranslator
 
-API_KEY = "w8LLH56zq2xTfxmMkNnuJ7tMl"
-API_SECRET = "XpHybmgDo2qVy6O6HFuf90NUEvaKL6FMCnBtJ1VfL8NLwZPHQn"
-BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAADs%2F1AEAAAAAiKH4DHiJ9eHySkqME3ku2z2mlJI%3DbID8tRsmqgGC05gXjJ6xqa3CIG8RqqgqAngWeZEeAqIBdsP2Tn"
-API_TOKEN = "1919411570901180416-2IGtHZ8Fv2MSzgrxcwg842iO9O7OoP"
-API_TOKEN_SECRET = "GVMjYcz154uvIO5XTDnn1oScCoaSMLpBOr9rpxE4kXmWv"
+API_KEY = os.environ.get("API_KEY")
+API_SECRET = os.environ.get("API_SECRET")
+BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
+API_TOKEN = os.environ.get("API_TOKEN")
+API_TOKEN_SECRET = os.environ.get("API_TOKEN_SECRET")
 
 client = tweepy.Client(BEARER_TOKEN, API_KEY, API_SECRET, API_TOKEN, API_TOKEN_SECRET)
 
