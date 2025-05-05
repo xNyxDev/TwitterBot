@@ -4,6 +4,7 @@ import threading
 import schedule
 import requests
 import tweepy
+import json
 
 from flask import Flask
 from deep_translator import GoogleTranslator
@@ -34,11 +35,12 @@ def obtener_dato_interesante():
     try:
         print("🔍 Obteniendo dato interesante...")
         res = requests.get("https://uselessfacts.jsph.pl/random.json?language=en")
-        print(f"📥 Respuesta de la API: {res.text}")
+        texto = res.text.strip().rstrip(";")  # 🧼 Limpiar el carácter ';'
+        print(f"📥 Respuesta de la API (limpia): {texto}")
 
         if res.status_code == 200:
-            dato_json = res.json()
-            texto_original = dato_json.get("text", None)
+            dato_json = json.loads(texto)
+            texto_original = dato_json.get("text")
             if texto_original:
                 traducido = GoogleTranslator(source='en', target='es').translate(texto_original)
                 print(f"✅ Dato traducido: {traducido}")
