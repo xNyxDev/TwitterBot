@@ -4,6 +4,7 @@ import threading
 import schedule
 import requests
 import tweepy
+
 from flask import Flask
 from deep_translator import GoogleTranslator
 
@@ -32,22 +33,21 @@ except Exception as e:
 def obtener_dato_interesante():
     try:
         print("🔍 Obteniendo dato interesante...")
-        res = requests.get("https://uselessfacts.jsph.pl/random.json?language=es")
-        print(f"⚠️ Respuesta de la API: {res.text}")  # Mostrar el cuerpo de la respuesta
+        res = requests.get("https://uselessfacts.jsph.pl/random.json?language=en")
+        print(f"📥 Respuesta de la API: {res.text}")
 
         if res.status_code == 200:
             dato_json = res.json()
-            print(f"✅ Dato JSON recibido: {dato_json}")  # Mostrar el JSON completo
             texto_original = dato_json.get("text", None)
             if texto_original:
-                traducido = GoogleTranslator(source='auto', target='es').translate(texto_original)
-                print(f"✅ Dato obtenido y traducido: {traducido}")
+                traducido = GoogleTranslator(source='en', target='es').translate(texto_original)
+                print(f"✅ Dato traducido: {traducido}")
                 return traducido
             else:
-                print("⚠️ No se encontró el campo 'text' en la respuesta.")
+                print("⚠️ El campo 'text' no se encontró en la respuesta.")
                 return None
         else:
-            print(f"⚠️ Error en la API de datos. Código: {res.status_code}")
+            print(f"⚠️ Error en la API. Código: {res.status_code}")
             return None
     except Exception as e:
         print(f"❌ Error al obtener el dato: {e}")
