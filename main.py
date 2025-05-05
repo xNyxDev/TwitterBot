@@ -2,6 +2,7 @@ import tweepy
 import time
 import os
 import requests as request
+import schedule
 
 from deep_translator import GoogleTranslator
 from flask import Flask
@@ -13,7 +14,6 @@ API_TOKEN = os.environ.get("API_TOKEN")
 API_TOKEN_SECRET = os.environ.get("API_TOKEN_SECRET")
 
 app = Flask(__name__)
-
 client = tweepy.Client(BEARER_TOKEN, API_KEY, API_SECRET, API_TOKEN, API_TOKEN_SECRET)
 
 def obtener_datos_interesantes():
@@ -26,20 +26,34 @@ def obtener_datos_interesantes():
             print("Error al obtener datos interesantes")
     except Exception as e:
         print(f"Error: {e}")
+        return None
 
-while True:
+def publicar_tweet():
     dato = obtener_datos_interesantes()
-    try:
-        client.create_tweet(text="Dato del Dia: " + dato)
-        print("Tweet enviado con éxito")
-    except Exception as e:
-        print(f"Error al enviar el tweet: {e}")
+    if dato:
+        try:
+            client.create_tweet(text="Dato del Dia: " + dato)
+            print("Tweet enviado con éxito")
+        except Exception as e:
+            print(f"Error al enviar el tweet: {e}")
 
-    time.sleep(3600)  
+schedule.every().hour.do(publicar_tweet)
 
 @app.route("/")
 def hello():
     return "Hola, mundo!"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000) 
+    port = int(os.environ.get("PORT", 10000))
+    # Ejecutar el scheduler en un hilo separado para no bloquear la app Flask
+    import threading
+    def run_scheduler():
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+
+    scheduler_thread = threading.Thread(target=run_scheduler)
+    scheduler_thread.daemon = True
+    scheduler_thread.start()
+
+    app.run(host="0.0.0.0", port=port)
