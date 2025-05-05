@@ -59,6 +59,7 @@ def obtener_dato_interesante():
         return None
     except Exception as e:
         print(f"❌ Error inesperado al procesar el dato: {e}")
+        print(f"Detalles del error inesperado: {e}")
         return None
 
 # ========== GUARDAR HISTORIAL ==========
