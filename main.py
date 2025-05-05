@@ -35,21 +35,38 @@ def obtener_dato_interesante():
         print("🔍 Obteniendo dato interesante...")
         res = requests.get("https://uselessfacts.jsph.pl/random.json?language=en")
         raw = res.text.strip().rstrip(";")
-        print(f"📥 Respuesta bruta: {raw}")
+        print(f"📥 Respuesta bruta (inglés): {raw}")
 
         if res.status_code == 200:
             try:
-                dato_json = json.loads(raw)
-                texto_original = dato_json.get("text")
+                dato_json_ingles = json.loads(raw)
+
+                # Guardar el JSON en inglés
+                with open("dato_ingles.json", "w", encoding="utf-8") as f:
+                    json.dump(dato_json_ingles, f, ensure_ascii=False, indent=4)
+                print("💾 JSON en inglés guardado en dato_ingles.json")
+
+                # Abrir el JSON y seleccionar el texto
+                with open("dato_ingles.json", "r", encoding="utf-8") as f:
+                    dato_cargado = json.load(f)
+                    texto_original = dato_cargado.get("text")
+
                 if texto_original:
                     traducido = GoogleTranslator(source='en', target='es').translate(texto_original)
                     print(f"✅ Traducción: {traducido}")
                     return traducido
                 else:
-                    print("⚠️ El campo 'text' no está en la respuesta.")
+                    print("⚠️ El campo 'text' no está en el JSON cargado.")
                     return None
+
             except json.JSONDecodeError as e:
                 print(f"⚠️ Error al decodificar JSON: {e} - Respuesta bruta: {raw}")
+                return None
+            except FileNotFoundError:
+                print("⚠️ Error: El archivo dato_ingles.json no se encontró.")
+                return None
+            except Exception as e:
+                print(f"❌ Error al procesar el JSON o el archivo: {e}")
                 return None
         else:
             print(f"⚠️ Código de error HTTP: {res.status_code}")
@@ -58,8 +75,7 @@ def obtener_dato_interesante():
         print(f"❌ Error de conexión al obtener el dato: {e}")
         return None
     except Exception as e:
-        print(f"❌ Error inesperado al procesar el dato: {e}")
-        print(f"Detalles del error inesperado: {e}")
+        print(f"❌ Error inesperado al obtener el dato: {e}")
         return None
 
 # ========== GUARDAR HISTORIAL ==========
