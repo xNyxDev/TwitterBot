@@ -27,7 +27,7 @@ def obtener_dato_curioso():
     """
     try:
         # API de Chukcha (Ruso)
-        response = requests.get("https://jokes.шутники.рф/random_joke")
+        response = requests.get("https://uselessfacts.jsph.pl/api/v2/facts/random?language=en")
         response.raise_for_status()  # Lanza una excepción para códigos de error HTTP
         data = response.json()
         joke_text_ru = data.get("text")
