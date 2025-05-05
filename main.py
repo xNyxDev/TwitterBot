@@ -27,7 +27,7 @@ def obtener_datos_interesantes():
         str: Un dato aleatorio traducido, o None si ocurre un error.
     """
     try:
-        res = request.get("https://uselessfacts.jsph.pl/random.json?language=en") #cambio el language a en
+        res = request.get("https://uselessfacts.jsph.pl/random.json?language=es") #cambio el language a en
         res.raise_for_status()  # Lanza una excepción para códigos de estado incorrectos (4xx o 5xx)
 
         data = res.json()  # Parsea los datos JSON
