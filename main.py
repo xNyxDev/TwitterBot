@@ -2,13 +2,17 @@ import tweepy
 import time
 import os
 import requests as request
+
 from deep_translator import GoogleTranslator
+from flask import Flask
 
 API_KEY = os.environ.get("API_KEY")
 API_SECRET = os.environ.get("API_SECRET")
 BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
 API_TOKEN = os.environ.get("API_TOKEN")
 API_TOKEN_SECRET = os.environ.get("API_TOKEN_SECRET")
+
+app = Flask(__name__)
 
 client = tweepy.Client(BEARER_TOKEN, API_KEY, API_SECRET, API_TOKEN, API_TOKEN_SECRET)
 
@@ -31,4 +35,11 @@ while True:
     except Exception as e:
         print(f"Error al enviar el tweet: {e}")
 
-    time.sleep(3600)  # Espera 1 hora antes de enviar el siguiente tweet
+    time.sleep(3600)  
+
+@app.route("/")
+def hello():
+    return "Hola, mundo!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000) 
