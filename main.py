@@ -37,7 +37,7 @@ while True:
     except Exception as e:
         print(f"Error al enviar el tweet: {e}")
 
-    time.sleep(3)  # Espera 1 hora antes de enviar el siguiente tweet
+    time.sleep(120)  # Espera 1 hora antes de enviar el siguiente tweet
 
 if __name__ == "__main__":
     main()
