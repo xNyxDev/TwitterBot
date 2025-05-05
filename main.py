@@ -58,7 +58,7 @@ def main():
     while True:
         texto = obtener_texto_de_json()
         if texto:
-            publicar_tweet(texto)
+            publicar_tweet("Daily Fact " + texto)
         else:
             print("No se pudo obtener el texto del JSON. No se enviará ningún tweet.")
         time.sleep(120)
