@@ -61,7 +61,7 @@ def main():
             publicar_tweet("Daily Fact: " + texto)
         else:
             print("No se pudo obtener el texto del JSON. No se enviará ningún tweet.")
-        time.sleep(360)
+        time.sleep(3600)
 
 if __name__ == "__main__":
     main()
